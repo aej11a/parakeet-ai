@@ -22,10 +22,10 @@ export default function RootLayout({
       <html lang="en">
         <body
           className={
-            inter.className + " w-full h-full relative flex z-0"
+            inter.className + " w-full h-screen relative flex z-0"
           }
         >
-          <nav className="flex-shrink-0 overflow-x-hidden bg-gray-900 w-1/6 text-white">
+          <nav className="flex-shrink-0 overflow-x-hidden bg-gray-900 w-1/5 text-white">
             <SidebarButtons />
             <Sidebar />
           </nav>

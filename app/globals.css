@@ -21,33 +21,46 @@ body {
 
 /* Basic table styling */
 table {
-    margin: 0 10%;
-    width: 80%;
-    border-collapse: collapse;
+  margin: 0 10%;
+  width: 80%;
+  border-collapse: collapse;
 }
 
 /* Add zebra-striping for alternate rows */
 tr:nth-child(even) {
-    background-color: #f2f2f2;
+  background-color: #f2f2f2;
 }
 
 /* Header row styling */
 th {
-    background-color: #999;
-    color: black;
-    padding: 15px;
-    text-align: left;
+  background-color: #999;
+  color: black;
+  padding: 15px;
+  text-align: left;
+}
+
+.chat th {
+  position: sticky;
+  top: 0;
 }
 
 /* Data row styling */
 td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
 /* Hover effect for rows */
 tr:hover {
-    background-color: #ddd;
-    cursor: pointer;
+  background-color: #ddd;
+  cursor: pointer;
+}
+
+.chat-link .split-screen-button {
+  @apply invisible;
+}
+
+.chat-link:hover .split-screen-button {
+  @apply visible;
 }
