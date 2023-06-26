@@ -20,6 +20,7 @@
     "eslint-config-next": "13.4.6",
     "jose": "^4.14.4",
     "js-cookie": "^3.0.5",
+    "markdown-to-jsx": "^7.2.1",
     "next": "13.4.6",
     "openai-edge": "^1.0.0",
     "postcss": "8.4.24",

@@ -4,6 +4,7 @@ import useDebouncedCallback from "@/components/useDebounce";
 import { useChat, Message } from "ai/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Markdown from "markdown-to-jsx";
 
 export const Chat = ({
   chatId,
@@ -13,8 +14,9 @@ export const Chat = ({
   initialMessages?: Message[];
 }) => {
   const router = useRouter();
-  const [completedMessages, setCompletedMessages] =
-    useState<Message[]>(initialMessages || []);
+  const [completedMessages, setCompletedMessages] = useState<Message[]>(
+    initialMessages || []
+  );
   const {
     messages,
     input,
@@ -32,7 +34,7 @@ export const Chat = ({
     },
   });
   return (
-    <div>
+    <div className="flex-col-reverse">
       {messages.map((message) => (
         <div
           key={message.id}
@@ -43,19 +45,19 @@ export const Chat = ({
         >
           <div className="py-4">
             <b>{message.role === "assistant" ? "AI: " : "User: "}</b>
-            {message.content}
+            <Markdown>{message.content}</Markdown>
           </div>
         </div>
       ))}
-
-      <div className="fixed bottom-0 px-24">
+      <div className="h-24 md:h-24 flex-shrink-0"></div>
+      <div className="fixed bottom-0 px-24 w-full">
         <Suggestions
           completedMessages={completedMessages}
           addMessage={appendMessage}
         />
         <form onSubmit={handleSubmit}>
           <input
-            className="border border-gray-300 rounded mb-8 shadow-xl p-2 w-3/4 mx-auto block"
+            className="border border-gray-300 rounded mb-8 shadow-xl p-2 w-3/4 block"
             value={input}
             placeholder="Say something..."
             onChange={handleInputChange}

@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 // transition-colors duration-200 hover:bg-gray-500/10
 export const SidebarButtons = () => {
   return (
-    <div className="mb-1 flex flex-col gap-2 mt-2 pl-2">
+    <div className="mb-1 flex flex-col gap-2 mt-2 pl-2 overflow-scroll">
       <div className="pl-1 pt-1 flex flex-row mb-1">
         <p className="w-10/12 text-2xl">My AI App</p>
         <div className="-mt-0.5 -ml-0.5">

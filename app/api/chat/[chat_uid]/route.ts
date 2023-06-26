@@ -55,7 +55,7 @@ export const getMessages = async (userId: string, chatId: string) => {
     `SELECT *
     FROM messages
     WHERE chat_uid = :chatId AND user_uid = :userId
-    ORDER BY created_at DESC
+    ORDER BY created_at ASC
     LIMIT :limit;`,
     { chatId, userId, limit: 20 }
   );

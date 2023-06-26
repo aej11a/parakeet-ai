@@ -10,7 +10,7 @@ export async function Sidebar() {
   }
   const chats = await getChats(userId);
   return (
-    <div>
+    <div className="h-full">
       <UserChatLinks chats={chats} />
     </div>
   );

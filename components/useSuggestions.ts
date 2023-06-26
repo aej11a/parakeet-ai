@@ -15,15 +15,18 @@ export const useSuggestions = ({
   const completedMessagesStr = JSON.stringify(completedMessages);
 
   useEffect(() => {
-    append({
-      content: `Given the following messages, suggest three questions that \
+    if (process.env.NODE_ENV === "production") {
+        console.log("TEST")
+      append({
+        content: `Given the following messages, suggest three questions that \
           the user might want to ask the assistant next. You must respond in the form of a list \
           of questions separated by the character "|". Do not include any other punctiation. \
           Do NOT number the list. Add a "|" as the last character at the end of the last question too. \
           ${completedMessagesStr}`,
-      role: "user",
-      createdAt: new Date(),
-    });
+        role: "user",
+        createdAt: new Date(),
+      });
+    }
   }, [completedMessagesStr, append]);
 
   //   const messages: Message[] = [{},{
