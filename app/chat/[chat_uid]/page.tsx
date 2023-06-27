@@ -17,7 +17,7 @@ export default async function ChatPage({
   // NEED TO CONVERT THE FORMAT OF THE MESSAGES BEFORE PASSING IN INITIAL MESSAGES
 
   return (
-    <div className="h-screen">
+    <div className="h-screen overflow-y-scroll">
       {/*Render messages*/}
       <Chat
         chatId={chat_uid}
