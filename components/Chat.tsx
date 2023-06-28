@@ -11,12 +11,16 @@ import { useSidebarToggle } from "./SidebarContainer";
 import { LuCopy } from "react-icons/lu";
 import { AiOutlineClose } from "react-icons/ai";
 import copy from "copy-to-clipboard";
+import remarkGfm from "remark-gfm";
 
 import dynamic from "next/dynamic";
 
-const SyntaxHighlighter = dynamic(() => import("react-syntax-highlighter").then((mod) => mod.Prism), {
-  loading: () => <p>Loading code...</p>,
-});
+const SyntaxHighlighter = dynamic(
+  () => import("react-syntax-highlighter").then((mod) => mod.Prism),
+  {
+    loading: () => <p>Loading code...</p>,
+  }
+);
 
 export const Chat = ({
   chatId,
@@ -29,6 +33,7 @@ export const Chat = ({
   closeChatLink?: string;
   initialMessages?: Message[];
 }) => {
+  const router = useRouter();
   const { toggleSidebar, isSideBarOpen } = useSidebarToggle();
 
   const [completedMessages, setCompletedMessages] = useState<Message[]>(
@@ -46,9 +51,6 @@ export const Chat = ({
       chatId,
     },
     initialMessages,
-    onFinish(message) {
-      setCompletedMessages(() => [...messages, message]);
-    },
   });
   // const messagesEndRef = useRef(null);
   // const scrollToBottom = () => {
@@ -57,7 +59,7 @@ export const Chat = ({
   // useEffect(scrollToBottom, [messages]);
   return (
     <div className="chat h-full flex flex-col overflow-y-scroll">
-      <div className="sticky top-0 bg-white text-center py-2 border-b flex justify-between">
+      <div className="sticky top-0 bg-white text-center py-2 border-b flex justify-between z-10">
         <div>
           <button onClick={() => toggleSidebar()} className="md:invisible">
             Open
@@ -80,9 +82,11 @@ export const Chat = ({
             (message.role === "assistant" ? "bg-gray-300" : "bg-white")
           }
         >
+          {console.log(message)}
           <div className="py-4">
-            <b>{message.role === "assistant" ? "AI: " : "User: "}</b>
+            <b>{message.role === "assistant" ? "AI: " : "You: "}</b>
             <Markdown
+              remarkPlugins={[remarkGfm]}
               // eslint-disable-next-line react/no-children-prop
               children={message.content}
               components={{

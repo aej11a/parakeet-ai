@@ -114,7 +114,11 @@ const saveMessages = async ({
     });
     const rawName = (await nameResponse.json()).choices[0].message.content;
     // get rid of quotes with .replaceAll
-    const name = rawName.replaceAll('"', "").replaceAll("'", "");
+    const nameWithoutQuotes = rawName.replaceAll('"', "").replaceAll("'", "");
+    const name =
+      nameWithoutQuotes.slice(0, -1) === "."
+        ? nameWithoutQuotes.slice(0, -1)
+        : nameWithoutQuotes;
     await createChat(chatId, userId, name);
     await saveMessage(
       chatId,
