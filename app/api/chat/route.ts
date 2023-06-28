@@ -1,4 +1,3 @@
-import "server-only";
 import { Client as PSClient, Config as PSConfig } from "@planetscale/database";
 import { auth } from "@clerk/nextjs";
 import {
@@ -9,6 +8,7 @@ import {
 } from "openai-edge";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { NextRequest } from "next/server";
+import { getChat } from "@/db/getChat";
 
 interface Chat {
   id: number;
@@ -151,20 +151,6 @@ const createChat = async (
   };
   await conn.execute(insertQuery, insertParams);
 };
-
-// Get a chat by id
-export async function getChat(chatId: string, userId: string) {
-  const conn = db.connection();
-  const query =
-    "SELECT * FROM chats WHERE uid = :chatId AND user_uid = :userId";
-  const params = { chatId, userId };
-  const result = await conn.execute(query, params);
-  if (result.rows.length === 0) {
-    return null;
-  } else {
-    return result.rows[0];
-  }
-}
 
 async function saveMessage(
   chatId: string,

@@ -4,6 +4,10 @@ import { Sidebar } from "./Sidebar";
 
 import { ClerkProvider, UserButton } from "@clerk/nextjs";
 import { SidebarButtons } from "@/components/SidebarButtons";
+import {
+  SidebarContainer,
+  SidebarContextProvider,
+} from "@/components/SidebarContainer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,15 +25,15 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={
-            inter.className + " w-full h-screen relative flex z-0"
-          }
+          className={inter.className + " w-full h-screen relative flex z-0"}
         >
-          <nav className="flex-shrink-0 overflow-x-hidden bg-gray-900 w-1/5 text-white">
-            <SidebarButtons />
-            <Sidebar />
-          </nav>
-          <main className="flex-grow">{children}</main>
+          <SidebarContextProvider>
+            <SidebarContainer>
+              <SidebarButtons />
+              <Sidebar />
+            </SidebarContainer>
+            <main className="flex-grow">{children}</main>
+          </SidebarContextProvider>
         </body>
       </html>
     </ClerkProvider>

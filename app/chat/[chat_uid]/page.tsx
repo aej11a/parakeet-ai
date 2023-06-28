@@ -2,6 +2,7 @@ import { getMessages } from "@/app/api/chat/[chat_uid]/route";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { Chat } from "../../../components/Chat";
+import { getChat } from "@/db/getChat";
 
 export default async function ChatPage({
   params: { chat_uid },
@@ -10,17 +11,22 @@ export default async function ChatPage({
 }) {
   const { userId } = auth();
   if (!userId) redirect("/");
-  const messages = (await getMessages(userId, chat_uid)).filter(
+
+  const [messagesRes, chat] = await Promise.all([
+    getMessages(userId, chat_uid),
+    getChat(chat_uid, userId),
+  ]);
+
+  const messages = messagesRes.filter(
     (row) => row.role && row.role !== "system"
   );
-
-  // NEED TO CONVERT THE FORMAT OF THE MESSAGES BEFORE PASSING IN INITIAL MESSAGES
 
   return (
     <div className="h-screen overflow-y-scroll">
       {/*Render messages*/}
       <Chat
         chatId={chat_uid}
+        chatName={chat?.name || "New chat"}
         initialMessages={messages.map((message) => ({
           content: message.message,
           role: message.role,

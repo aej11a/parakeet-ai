@@ -6,7 +6,6 @@ import { AiOutlineSplitCells } from "react-icons/ai";
 
 export const UserChatLinks = ({ chats }: { chats: FormattedChat[] }) => {
   const segments = useSelectedLayoutSegments();
-  console.log(segments);
   return (
     <div className="min-h-full overflow-y-auto">
       {chats.map((chat) => (

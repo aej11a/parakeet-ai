@@ -58,9 +58,14 @@ tr:hover {
 }
 
 .chat-link .split-screen-button {
-  @apply invisible;
+  @apply invisible !inline-block;
 }
 
 .chat-link:hover .split-screen-button {
   @apply visible;
+}
+
+.sidebar-buttons-top {
+  box-shadow: 0 0 25px 0 rgba(0, 0, 0, 0.75);
+  clip-path: inset(0px 0px -25px 0px);
 }

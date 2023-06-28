@@ -16,7 +16,6 @@ export const useSuggestions = ({
 
   useEffect(() => {
     if (process.env.NODE_ENV === "production") {
-        console.log("TEST")
       append({
         content: `Given the following messages, suggest three questions that \
           the user might want to ask the assistant next. You must respond in the form of a list \
