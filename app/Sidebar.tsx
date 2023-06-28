@@ -1,6 +1,5 @@
 import { auth } from "@clerk/nextjs";
-import { getChats } from "./api/chats/route";
-import Link from "next/link";
+import { getChats } from "@/db/getChat";
 import { UserChatLinks } from "@/components/UserChatLinks";
 
 export async function Sidebar() {

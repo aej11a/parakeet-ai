@@ -1,6 +1,7 @@
 import { Client as PSClient, Config as PSConfig } from "@planetscale/database";
 import { auth } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
+import { getChats } from "@/db/getChat";
 
 export type ChatFromDb = {
   uid: string;
@@ -45,20 +46,3 @@ export async function POST(req: NextRequest) {
     }
   );
 }
-
-// Get the user's last 20 chats from the database
-export const getChats = async (userId: string) => {
-  const conn = db.connection();
-  const chats = await conn.execute(
-    "SELECT * FROM chats WHERE user_uid = :userId ORDER BY created_at DESC LIMIT 20",
-    { userId }
-  );
-  return (chats.rows as ChatFromDb[]).map((chat: ChatFromDb) => {
-    return {
-      uid: chat.uid,
-      user_id: chat.user_uid,
-      created_at: new Date(chat.created_at),
-      name: chat.name,
-    };
-  });
-};

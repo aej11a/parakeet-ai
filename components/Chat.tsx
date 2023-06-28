@@ -1,17 +1,22 @@
 "use client";
 import { Suggestions } from "@/components/Suggestions";
-import useDebouncedCallback from "@/components/useDebounce";
 import { useChat, Message } from "ai/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Markdown from "react-markdown";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+// import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Link from "next/link";
 import { useSidebarToggle } from "./SidebarContainer";
 import { LuCopy } from "react-icons/lu";
 import { AiOutlineClose } from "react-icons/ai";
 import copy from "copy-to-clipboard";
+
+import dynamic from "next/dynamic";
+
+const SyntaxHighlighter = dynamic(() => import("react-syntax-highlighter").then((mod) => mod.Prism), {
+  loading: () => <p>Loading code...</p>,
+});
 
 export const Chat = ({
   chatId,
@@ -54,7 +59,9 @@ export const Chat = ({
     <div className="chat h-full flex flex-col overflow-y-scroll">
       <div className="sticky top-0 bg-white text-center py-2 border-b flex justify-between">
         <div>
-          <button onClick={() => toggleSidebar()} className="md:invisible">Open</button>
+          <button onClick={() => toggleSidebar()} className="md:invisible">
+            Open
+          </button>
         </div>
         <div className="w-3/4 line-clamp-1">{chatName}</div>
         <div className="px-4">
@@ -120,10 +127,15 @@ export const Chat = ({
       {/* <div ref={messagesEndRef} /> */}
       <div className="flex-grow min-h-24 md:h-32"></div>
       <div className="sticky bottom-0 px-8 md:px-16 w-full">
-        <Suggestions
-          completedMessages={completedMessages}
-          addMessage={appendMessage}
-        />
+        {/* 
+           Not loving this - feels like a waste of space and resources ($$$), underpolished
+           Need to re-evaluate later and see if it's worth it
+
+          <Suggestions
+            completedMessages={completedMessages}
+            addMessage={appendMessage}
+          /> 
+        */}
         <form onSubmit={handleSubmit}>
           <input
             className="border border-gray-300 rounded mb-8 shadow-xl p-2 w-full resize-none max-h-[200px]"
