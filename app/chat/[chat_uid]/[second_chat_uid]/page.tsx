@@ -20,17 +20,13 @@ export default async function ChatPage({
     getChat(second_chat_uid, userId),
   ]);
 
-  if (!leftChat && !rightChat) redirect("/");
-  else if (!leftChat) redirect(`/chat/${second_chat_uid}`);
-  else if (!rightChat) redirect(`/chat/${chat_uid}`);
-
   return (
     <div className="flex">
       {/*Render messages*/}
       <div className="w-1/2 h-screen border-r-2">
         <Chat
           chatId={chat_uid}
-          chatName={leftChat.name}
+          chatName={leftChat?.name || "New chat"}
           initialMessages={leftMessages
             .filter((row) => row.role && row.role !== "system")
             .map((message) => ({
@@ -44,7 +40,7 @@ export default async function ChatPage({
       <div className="w-1/2 h-screen">
         <Chat
           chatId={second_chat_uid}
-          chatName={rightChat.name}
+          chatName={rightChat?.name || "New chat"}
           closeChatLink={`/chat/${chat_uid}`}
           initialMessages={rightMessages
             .filter((row) => row.role && row.role !== "system")
