@@ -1,7 +1,7 @@
 import { getMessages } from "@/app/api/chat/[chat_uid]/route";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import { Chat } from "../../../components/Chat";
+import { Chat } from "../../../components/Chat_W_Context";
 import { getChat } from "@/db/getChat";
 
 export default async function ChatPage({
