@@ -12,86 +12,12 @@ import { LuCopy } from "react-icons/lu";
 import { AiOutlineClose } from "react-icons/ai";
 import copy from "copy-to-clipboard";
 import remarkGfm from "remark-gfm";
-import GoogleMapReact, { Coords } from "google-map-react";
-
-function findCenter(coords: Coords[]): Coords {
-  if (coords.length === 0) {
-    return {
-      lat: 40.7128,
-      lng: -74.0061,
-    };
-  }
-
-  let sumLat = 0;
-  let sumLng = 0;
-
-  for (let coord of coords) {
-    sumLat += coord.lat;
-    sumLng += coord.lng;
-  }
-
-  return {
-    lat: sumLat / coords.length,
-    lng: sumLng / coords.length,
-  };
-}
-
-const MapDisplay = memo(
-  ({
-    zoom,
-    placesData,
-  }: {
-    zoom: number;
-    placesData: Record<string, Coords>;
-  }) => {
-    console.log("rendering map", placesData);
-    if (!placesData) return null;
-    const center = findCenter(Object.values(placesData));
-    const placeCoords = Object.values(placesData);
-    return (
-      <GoogleMapReact
-        bootstrapURLKeys={{
-          key: process.env.NEXT_PUBLIC_GOOGLE_API_KEY as string,
-        }}
-        defaultCenter={{
-          lat: center.lat,
-          lng: center.lng,
-        }}
-        defaultZoom={zoom}
-        yesIWantToUseGoogleMapApiInternals
-        onGoogleApiLoaded={({ map, maps }) => {
-          var bounds = new google.maps.LatLngBounds();
-          for (var i = 0; i < placeCoords.length; i++) {
-            const latLngObj = new google.maps.LatLng(
-              placeCoords[i].lat,
-              placeCoords[i].lng
-            );
-            bounds.extend(latLngObj);
-          }
-
-          map.fitBounds(bounds);
-          var currentZoom = map.getZoom();
-          var newZoom = currentZoom; ////////// future self - adjust the zoom here
-          map.setZoom(newZoom);
-        }}
-      >
-        {Object.entries(placesData).map(([placeName, value]) => (
-          <div
-            key={placeName}
-            lat={value.lat}
-            lng={value.lng}
-            className="bg-red-500 rounded-full w-5 h-5"
-          >
-            {placeName}
-          </div>
-        ))}
-      </GoogleMapReact>
-    );
-  }
-);
-MapDisplay.displayName = "MapDisplay";
 
 import dynamic from "next/dynamic";
+import { MapDisplay } from "./Contextual/Map";
+import { Flowchart } from "./Contextual/Diagram";
+import { Coords } from "google-map-react";
+import { ImageGallery } from "./ImageGallery";
 
 const SyntaxHighlighter = dynamic(
   () => import("react-syntax-highlighter").then((mod) => mod.Prism),
@@ -114,10 +40,9 @@ export const Chat = ({
   const { toggleSidebar, isSideBarOpen } = useSidebarToggle();
   const [contextualInfo, setContextualInfo] = useState<any>({});
   const [placesData, setPlacesData] = useState<Record<string, Coords>>();
+  const [diagramData, setDiagramData] = useState<any>();
+  const [imageData, setImageData] = useState<any>();
 
-  const [completedMessages, setCompletedMessages] = useState<Message[]>(
-    initialMessages || []
-  );
   const {
     messages,
     input,
@@ -131,7 +56,6 @@ export const Chat = ({
     },
     initialMessages,
     onFinish: async (generatedMessage) => {
-      console.log("init contextual info query");
       const contextual_info = await fetch("/api/context", {
         method: "POST",
         body: JSON.stringify({
@@ -141,17 +65,20 @@ export const Chat = ({
         }),
       });
       const context = await contextual_info.json();
+      console.log(context)
       setContextualInfo(context);
       if (context.contextType === "google_places_api_find_place") {
         setPlacesData(context.places);
+      } else if (context.contextType === "generate_diagram") {
+        setDiagramData(context.diagram);
+      } else if (context.contextType === "search_images") {
+        console.log(context);
+        setImageData(context.images);
       }
     },
   });
-  // const messagesEndRef = useRef(null);
-  // const scrollToBottom = () => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // };
-  // useEffect(scrollToBottom, [messages]);
+  console.log(imageData)
+
   const defaultProps = {
     center: {
       lat: 10.99835602,
@@ -160,10 +87,6 @@ export const Chat = ({
     zoom: 11,
   };
 
-  const center =
-    contextualInfo.contextType === "google_places_api_find_place"
-      ? findCenter(Object.values(contextualInfo.places))
-      : defaultProps.center;
   return (
     <div className="chat h-full flex flex-col overflow-y-scroll">
       <div className="sticky top-0 bg-white text-center py-2 border-b flex justify-between z-10">
@@ -243,6 +166,10 @@ export const Chat = ({
             {placesData && (
               <MapDisplay zoom={11} placesData={placesData}></MapDisplay>
             )}
+            {typeof window !== "undefined" && diagramData && (
+              <Flowchart data={diagramData} />
+            )}
+            {imageData && <ImageGallery images={imageData} />}
           </div>
         </div>
       </div>

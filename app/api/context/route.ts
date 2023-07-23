@@ -45,6 +45,8 @@ async function getLatLngForPlaces(
 
 import { NextRequest, NextResponse } from "next/server";
 import { getChat } from "@/db/getChat";
+import { DIAGRAM_SCHEMA } from "./schemas";
+import { searchImages } from "@/bing/image-search";
 // import { ChatCompletionFunctions } from "openai-edge/types/api";
 
 const db_config: PSConfig = {
@@ -132,6 +134,12 @@ const functions = [
       required: ["place_names"],
     },
   },
+  {
+    name: "generate_diagram",
+    description:
+      "Use flowchart.js to display a box diagram or flowchart to the user, useful for explanatory content or illustrating steps in a processes. Show conditions, branches, and loops, as needed.",
+    parameters: DIAGRAM_SCHEMA,
+  },
 ];
 
 // const openAI = new OpenAI();
@@ -184,17 +192,14 @@ export async function POST(req: NextRequest) {
     ).then((res) => res.json());
 
     if (functions_response.choices[0].finish_reason === "function_call") {
+      console.log(
+        "chosen call:",
+        functions_response.choices[0].message.function_call.name
+      );
       if (
         functions_response.choices[0].message.function_call.name ===
         "google_places_api_find_place"
       ) {
-        console.log("got some places");
-        console.log(
-          functions_response.choices[0].message.function_call.arguments
-        );
-        console.log(
-          typeof functions_response.choices[0].message.function_call.arguments
-        );
         const placesToLookup: {
           place_names: string[];
           city: string;
@@ -207,13 +212,55 @@ export async function POST(req: NextRequest) {
           placesToLookup.city
         );
 
-        console.log("placeCoordinates", placeCoordinates);
-        const result = {}
+        const result = {};
 
         result.contextType = "google_places_api_find_place";
-        result.places = placeCoordinates
+        result.places = placeCoordinates;
 
         return NextResponse.json(result);
+      } else if (
+        functions_response.choices[0].message.function_call.name ===
+        "generate_diagram"
+      ) {
+        console.log(
+          functions_response.choices[0].message.function_call.arguments
+        );
+        const result = {};
+        result.contextType = "generate_diagram";
+        result.diagram = JSON.parse(
+          functions_response.choices[0].message.function_call.arguments
+        ).flowchartjsData;
+        return NextResponse.json(result);
+      } else if (
+        functions_response.choices[0].message.function_call.name ===
+        "search_images"
+      ) {
+        const result = await searchImages(
+          JSON.parse(
+            functions_response.choices[0].message.function_call.arguments
+          ).search_term
+        );
+      
+        if (!result || !result.value.length) {
+          return new Response("No result", { status: 404 });
+        }
+        const images = result.value.map((image) => ({
+          name: image.name,
+          id: image.imageId,
+          srcPageUrl: image.hostPageUrl,
+          srcUrl: image.contentUrl,
+          accentColor: image.accentColor,
+          thumbnailUrl: image.thumbnailUrl,
+          srcDimensions: {
+            width: image.width,
+            height: image.height,
+          },
+          thumbnailDimensions: {
+            width: image.thumbnail.width,
+            height: image.thumbnail.height,
+          },
+        }));
+        return NextResponse.json({contextType: "search_images", images});
       }
     }
 

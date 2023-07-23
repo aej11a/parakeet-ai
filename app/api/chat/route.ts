@@ -61,9 +61,9 @@ export async function POST(req: NextRequest) {
   const req_messages = req_body.messages as ChatMessage[];
 
   // Add the initial prompt to set up the conversation
-  if (req_messages.length === 1) {
-    req_messages.unshift(INITIAL_MESSAGE);
-  }
+  // if (req_messages.length === 1) {
+  //   req_messages.unshift(INITIAL_MESSAGE);
+  // }
 
   // Ask OpenAI for a streaming chat completion given the prompt
   const response = await openai.createChatCompletion({
@@ -120,12 +120,12 @@ const saveMessages = async ({
         ? nameWithoutQuotes.slice(0, -1)
         : nameWithoutQuotes;
     await createChat(chatId, userId, name);
-    await saveMessage(
-      chatId,
-      userId,
-      INITIAL_MESSAGE.role,
-      INITIAL_MESSAGE.content
-    );
+    // await saveMessage(
+    //   chatId,
+    //   userId,
+    //   INITIAL_MESSAGE.role,
+    //   INITIAL_MESSAGE.content
+    // );
   }
   await saveMessage(chatId, userId, Roles.User, user_message);
   await saveMessage(chatId, userId, Roles.Assistant, ai_message);
@@ -147,13 +147,13 @@ const createChat = async (
     throw new Error("Failed to create chat");
   }
   const insertQuery = `INSERT INTO messages (uid, chat_uid, user_uid, role, message) VALUES (UUID(), :chatId, :userId, :role, :content)`;
-  const insertParams = {
-    chatId,
-    userId,
-    role: INITIAL_MESSAGE.role,
-    content: INITIAL_MESSAGE.content,
-  };
-  await conn.execute(insertQuery, insertParams);
+  // const insertParams = {
+  //   chatId,
+  //   userId,
+  //   role: INITIAL_MESSAGE.role,
+  //   content: INITIAL_MESSAGE.content,
+  // };
+  // await conn.execute(insertQuery, insertParams);
 };
 
 async function saveMessage(
