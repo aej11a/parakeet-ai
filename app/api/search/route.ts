@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Client as PSClient, Config as PSConfig } from "@planetscale/database";
 import { ChatCompletionRequestMessageRoleEnum as Roles } from "openai-edge";
 import { auth } from "@clerk/nextjs";
+import { getChat } from "@/db/getChat";
 
 export type MessageFromDb = {
   uid: string;
@@ -10,7 +11,7 @@ export type MessageFromDb = {
   message: string;
   created_at: string;
   role: Roles;
-}
+};
 
 const db_config: PSConfig = {
   host: process.env.PS_HOST,
@@ -22,20 +23,34 @@ const db = new PSClient(db_config);
 
 export const GET = async (req: NextRequest) => {
   // split the req.nextUrl.pathname into an array of strings and grab the last element
-  const chat_uid = req.nextUrl.pathname.split("/").pop();
+  const url = req.nextUrl;
   const { userId } = auth();
 
   if (!userId) {
     return new Response("Not Authorized", { status: 401 });
   }
 
-  if (!chat_uid) {
-    return new Response("Missing chat_uid", { status: 400 });
+  if (!url.searchParams.get("query")) {
+    return new Response("Missing query", { status: 400 });
   }
+
+  const resultMessages = await searchForMessages(
+    userId,
+    url.searchParams.get("query") as string
+  );
+
+  const results = await Promise.all(
+    resultMessages.map(async (message) => {
+      return {
+        matchedMessage: message,
+        associatedChat: await getChat(message.chat_uid, userId),
+      };
+    })
+  );
 
   return new NextResponse(
     JSON.stringify({
-      messages: await getMessages(userId, chat_uid),
+      results,
     }),
     {
       headers: {
@@ -48,15 +63,14 @@ export const GET = async (req: NextRequest) => {
 };
 
 // Get the user's last 20 chats from the database
-export const getMessages = async (userId: string, chatId: string) => {
+export const searchForMessages = async (userId: string, searchTerm: string) => {
   const conn = db.connection();
   const messages = await conn.execute(
-    `SELECT *
-    FROM messages
-    WHERE chat_uid = :chatId AND user_uid = :userId
-    ORDER BY created_at ASC
+    `SELECT * 
+    FROM messages 
+    WHERE message LIKE :searchTerm AND user_uid = :userId
     LIMIT :limit;`,
-    { chatId, userId, limit: 20 }
+    { searchTerm: `%${searchTerm}%`, userId, limit: 20 }
   );
   return messages.rows as MessageFromDb[];
 };

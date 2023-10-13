@@ -24,7 +24,7 @@ export const UserChatLinks = ({ chats }: { chats: FormattedChat[] }) => {
                   <Link
                     href={`/chat/${segments[1]}/${chat.uid}`}
                     title={"Open in Split Screen"}
-                    className="split-screen-button hover:bg-gray-500 text-white font-bold py-1 px-1 rounded-md"
+                    className="split-screen-button hover:bg-gray-500 text-white font-bold py-1 px-1 rounded-md mr-2"
                   >
                     <AiOutlineSplitCells size={20} />
                   </Link>

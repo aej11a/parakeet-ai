@@ -30,19 +30,6 @@ export const Suggestions = ({
     }
   }, [completedMessagesStr, append]);
 
-  //   const sampleMessages: Message[] = [
-  //     {},
-  //     {
-  //       id: "sadsads",
-  //       role: Roles.Assistant,
-  //       content:
-  //         "Are there any dips that can be made ahead of time for a football party?|What are some vegetarian options for a football party?|Can you suggest some desserts to serve at a football party?|",
-  //     },
-  //   ];
-
-  //   const suggMessages =
-  //     process.env.NODE_ENV === "production" ? messages : sampleMessages;
-
   const suggestionsToRender =
     suggMessages.length % 2 === 0 &&
     suggMessages[suggMessages.length - 1]?.content

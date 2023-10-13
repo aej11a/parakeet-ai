@@ -14,6 +14,7 @@ import copy from "copy-to-clipboard";
 import remarkGfm from "remark-gfm";
 
 import dynamic from "next/dynamic";
+import { HamburgerMenuIcon } from "@radix-ui/react-icons";
 
 const SyntaxHighlighter = dynamic(
   () => import("react-syntax-highlighter").then((mod) => mod.Prism),
@@ -52,17 +53,13 @@ export const Chat = ({
     },
     initialMessages,
   });
-  // const messagesEndRef = useRef(null);
-  // const scrollToBottom = () => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // };
-  // useEffect(scrollToBottom, [messages]);
+
   return (
     <div className="chat h-full flex flex-col overflow-y-scroll">
       <div className="sticky top-0 bg-white text-center py-2 border-b flex justify-between z-10">
         <div>
-          <button onClick={() => toggleSidebar()} className="md:invisible">
-            Open
+          <button onClick={() => toggleSidebar()} className="md:invisible p-2 ml-2 -mr-2 border rounded-xl hover:bg-gray-200 transition-all">
+            <HamburgerMenuIcon />
           </button>
         </div>
         <div className="w-3/4 line-clamp-1">{chatName}</div>
@@ -94,10 +91,7 @@ export const Chat = ({
                   const match = /language-(\w+)/.exec(className || "");
                   return !inline && match ? (
                     <>
-                      <div
-                        className="flex items-center relative px-4 py-2 -mb-2 text-xs justify-between rounded-t-md text-white bg-slate-700"
-                        // style={{ backgroundColor: "#1E1E1E" }}
-                      >
+                      <div className="flex items-center relative px-4 py-2 -mb-2 text-xs justify-between rounded-t-md text-white bg-slate-700">
                         <span>{className?.substring(9)}</span>
                         <button
                           className="flex ml-auto gap-2"

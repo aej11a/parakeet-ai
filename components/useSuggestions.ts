@@ -28,12 +28,6 @@ export const useSuggestions = ({
     }
   }, [completedMessagesStr, append]);
 
-  //   const messages: Message[] = [{},{
-  //     id: "sadsads",
-  //     role: Roles.Assistant,
-  //     content: "Are there any dips that can be made ahead of time for a football party?|What are some vegetarian options for a football party?|Can you suggest some desserts to serve at a football party?|",
-  //   }];
-
   const suggestions =
     messages.length % 2 === 0 && messages[messages.length - 1]?.content
       ? messages[messages.length - 1]?.content.split("|").slice(0, -1)
