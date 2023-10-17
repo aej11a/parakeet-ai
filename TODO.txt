@@ -1,6 +1,14 @@
 New features
 
-- Collaborative mode (group chats)
-- Contextual UI - the white whale
-- Split chats into tabs ✅
+* Fix bug with "new chat in split screen" clearing the first chat UI if its in the middle of streaming a response
+- Delete chat
+- Collaborative mode (group chats) - websockets
+- Contextual UI
 - Ongoing summary feature
+- Custom instructions
+- Share feature
+- Group and organize sidebar chats
+- Filter by chat name?
+- Make the input expand vertically
+- Conciseness slider
+- Temperature slider

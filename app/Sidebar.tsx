@@ -7,10 +7,10 @@ export async function Sidebar() {
   if (!userId) {
     return null;
   }
-  const chats = await getChats(userId);
+  const chatsRes = await getChats(userId);
   return (
     <div className="h-full">
-      <UserChatLinks chats={chats} />
+      <UserChatLinks chats={chatsRes.chats} initialDoesNextPageExist={chatsRes.doesNextPageExist} />
     </div>
   );
 }

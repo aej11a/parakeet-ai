@@ -14,6 +14,8 @@ import copy from "copy-to-clipboard";
 import remarkGfm from "remark-gfm";
 
 import dynamic from "next/dynamic";
+import { ResultImage } from "@/experimental/bing/image-types";
+import { ImageGallery } from "./ImageGallery";
 
 const SyntaxHighlighter = dynamic(
   () => import("react-syntax-highlighter").then((mod) => mod.Prism),
@@ -33,11 +35,14 @@ export const Chat = ({
   closeChatLink?: string;
   initialMessages?: Message[];
 }) => {
+  const [images, setImages] = useState<Array<ResultImage>>([]);
+
   const { toggleSidebar, isSideBarOpen } = useSidebarToggle();
 
   const [completedMessages, setCompletedMessages] = useState<Message[]>(
     initialMessages || []
   );
+  
   const {
     messages,
     input,
@@ -50,6 +55,9 @@ export const Chat = ({
       chatId,
     },
     initialMessages,
+    onFinish(message) {
+      getImages();
+    },
   });
   // const messagesEndRef = useRef(null);
   // const scrollToBottom = () => {
@@ -73,7 +81,7 @@ export const Chat = ({
           )}
         </div>
       </div>
-      {messages.map((message) => (
+      {messages.map((message, idx) => (
         <div
           key={message.id}
           className={
@@ -124,20 +132,14 @@ export const Chat = ({
               }}
             />
           </div>
+          {idx === messages.length - 1 && images.length > 0 && (
+            <ImageGallery images={images} />
+          )}
         </div>
       ))}
       {/* <div ref={messagesEndRef} /> */}
       <div className="flex-grow min-h-24 md:h-32"></div>
       <div className="sticky bottom-0 px-8 md:px-16 w-full">
-        {/* 
-           Not loving this - feels like a waste of space and resources ($$$), underpolished
-           Need to re-evaluate later and see if it's worth it
-
-          <Suggestions
-            completedMessages={completedMessages}
-            addMessage={appendMessage}
-          /> 
-        */}
         <form onSubmit={handleSubmit}>
           <input
             className="border border-gray-300 rounded mb-8 shadow-xl p-2 w-full resize-none max-h-[200px]"

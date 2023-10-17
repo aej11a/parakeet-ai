@@ -1,4 +1,4 @@
-import { searchImages } from "@/bing/image-search";
+import { searchImages } from "@/experimental/bing/image-search";
 import { NextRequest, NextResponse } from "next/server";
 
 import {

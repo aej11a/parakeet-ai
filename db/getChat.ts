@@ -25,18 +25,35 @@ export async function getChat(
 }
 
 // Get the user's last 20 chats from the database
-export const getChats = async (userId: string) => {
+export const getChats = async (
+  userId: string,
+  pageSize = 20,
+  currentPage = 1
+) => {
+  let doesNextPageExist = false;
   const conn = db.connection();
   const chats = await conn.execute(
-    "SELECT * FROM chats WHERE user_uid = :userId ORDER BY created_at DESC LIMIT 20",
-    { userId }
+    "SELECT * FROM chats WHERE user_uid = :userId ORDER BY created_at DESC LIMIT :pageSize OFFSET :offset",
+    {
+      userId,
+      pageSize: pageSize + 1, // add one so we can decide if there is a next page or not
+      offset: (currentPage - 1) * pageSize,
+    }
   );
-  return (chats.rows as ChatFromDb[]).map((chat: ChatFromDb) => {
-    return {
-      uid: chat.uid,
-      user_id: chat.user_uid,
-      created_at: new Date(chat.created_at),
-      name: chat.name,
-    };
-  });
+  if (chats.rows.length === pageSize + 1) {
+    doesNextPageExist = true;
+    chats.rows.pop();
+  }
+  return {
+    page: currentPage,
+    doesNextPageExist,
+    chats: (chats.rows as ChatFromDb[]).map((chat: ChatFromDb) => {
+      return {
+        uid: chat.uid,
+        user_id: chat.user_uid,
+        created_at: new Date(chat.created_at),
+        name: chat.name,
+      };
+    }),
+  };
 };

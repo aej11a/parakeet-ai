@@ -17,7 +17,7 @@ export default async function ChatPage({
     getChat(chat_uid, userId),
   ]);
 
-  const messages = messagesRes.filter(
+  const messages = messagesRes.messages.filter(
     (row) => row.role && row.role !== "system"
   );
 
@@ -33,6 +33,7 @@ export default async function ChatPage({
           id: message.uid,
           createdAt: new Date(message.created_at),
         }))}
+        initialDoesNextPageExist={messagesRes.doesNextPageExist}
       />
     </div>
   );

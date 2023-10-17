@@ -27,7 +27,7 @@ export default async function ChatPage({
         <Chat
           chatId={chat_uid}
           chatName={leftChat?.name || "New chat"}
-          initialMessages={leftMessages
+          initialMessages={leftMessages.messages
             .filter((row) => row.role && row.role !== "system")
             .map((message) => ({
               content: message.message,
@@ -35,6 +35,8 @@ export default async function ChatPage({
               id: message.uid,
               createdAt: new Date(message.created_at),
             }))}
+          initialDoesNextPageExist={leftMessages.doesNextPageExist}
+          isSplitScreen
         />
       </div>
       <div className="w-1/2 h-screen">
@@ -42,7 +44,7 @@ export default async function ChatPage({
           chatId={second_chat_uid}
           chatName={rightChat?.name || "New chat"}
           closeChatLink={`/chat/${chat_uid}`}
-          initialMessages={rightMessages
+          initialMessages={rightMessages.messages
             .filter((row) => row.role && row.role !== "system")
             .map((message) => ({
               content: message.message,
@@ -50,6 +52,8 @@ export default async function ChatPage({
               id: message.uid,
               createdAt: new Date(message.created_at),
             }))}
+          initialDoesNextPageExist={leftMessages.doesNextPageExist}
+          isSplitScreen
         />
       </div>
     </div>

@@ -176,15 +176,6 @@ export const Chat = ({
       {/* <div ref={messagesEndRef} /> */}
       <div className="flex-grow min-h-24 md:h-32"></div>
       <div className="sticky bottom-0 px-8 md:px-16 w-1/2">
-        {/* 
-           Not loving this - feels like a waste of space and resources ($$$), underpolished
-           Need to re-evaluate later and see if it's worth it
-
-          <Suggestions
-            completedMessages={completedMessages}
-            addMessage={appendMessage}
-          /> 
-        */}
         <form onSubmit={handleSubmit}>
           <input
             className="border border-gray-300 rounded mb-8 shadow-xl p-2 w-full resize-none max-h-[200px]"

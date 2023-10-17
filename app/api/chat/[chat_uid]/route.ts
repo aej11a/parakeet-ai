@@ -10,7 +10,7 @@ export type MessageFromDb = {
   message: string;
   created_at: string;
   role: Roles;
-}
+};
 
 const db_config: PSConfig = {
   host: process.env.PS_HOST,
@@ -21,6 +21,15 @@ const db_config: PSConfig = {
 const db = new PSClient(db_config);
 
 export const GET = async (req: NextRequest) => {
+  const currentPageRaw = req.nextUrl.searchParams.get("currentPage");
+  const pageSizeRaw = req.nextUrl.searchParams.get("pageSize");
+  const currentPage = currentPageRaw ? parseInt(currentPageRaw) : 1;
+  const pageSize = pageSizeRaw
+    ? parseInt(pageSizeRaw) < 20
+      ? parseInt(pageSizeRaw)
+      : 20
+    : 20;
+
   // split the req.nextUrl.pathname into an array of strings and grab the last element
   const chat_uid = req.nextUrl.pathname.split("/").pop();
   const { userId } = auth();
@@ -34,9 +43,7 @@ export const GET = async (req: NextRequest) => {
   }
 
   return new NextResponse(
-    JSON.stringify({
-      messages: await getMessages(userId, chat_uid),
-    }),
+    JSON.stringify(await getMessages(userId, chat_uid, pageSize, currentPage)),
     {
       headers: {
         "Content-Type": "application/json",
@@ -48,15 +55,39 @@ export const GET = async (req: NextRequest) => {
 };
 
 // Get the user's last 20 chats from the database
-export const getMessages = async (userId: string, chatId: string) => {
+export const getMessages = async (
+  userId: string,
+  chatId: string,
+  pageSize = 20,
+  currentPage = 1
+) => {
+  const pageSizeWithLimit = pageSize > 20 ? 20 : pageSize;
+  let doesNextPageExist = false;
   const conn = db.connection();
   const messages = await conn.execute(
-    `SELECT *
-    FROM messages
-    WHERE chat_uid = :chatId AND user_uid = :userId
-    ORDER BY created_at ASC
-    LIMIT :limit;`,
-    { chatId, userId, limit: 20 }
+    `SELECT * 
+    FROM (
+      SELECT *
+      FROM messages
+      WHERE chat_uid = :chatId AND user_uid = :userId
+      ORDER BY created_at DESC
+      LIMIT :limit
+      OFFSET :offset
+      ) AS subquery
+    ORDER BY created_at ASC;`,
+    {
+      chatId,
+      userId,
+      limit: pageSizeWithLimit + 1,
+      offset: (currentPage - 1) * pageSizeWithLimit,
+    }
   );
-  return messages.rows as MessageFromDb[];
+  if (messages.rows.length === pageSizeWithLimit + 1) {
+    doesNextPageExist = true;
+    messages.rows.shift();
+  }
+  return {
+    messages: messages.rows as MessageFromDb[],
+    doesNextPageExist,
+  };
 };

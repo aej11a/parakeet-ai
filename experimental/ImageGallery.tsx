@@ -1,4 +1,4 @@
-import { ResultImage } from "@/bing/image-types";
+import { ResultImage } from "@/experimental/bing/image-types";
 
 export const ImageGallery = ({ images }: { images: Array<ResultImage> }) => {
   return (

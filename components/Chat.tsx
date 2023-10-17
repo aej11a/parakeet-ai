@@ -2,19 +2,20 @@
 import { Suggestions } from "@/components/Suggestions";
 import { useChat, Message } from "ai/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, memo, useMemo } from "react";
 import Markdown from "react-markdown";
 // import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Link from "next/link";
 import { useSidebarToggle } from "./SidebarContainer";
-import { LuCopy } from "react-icons/lu";
+import { LuCopy, LuMousePointerClick } from "react-icons/lu";
 import { AiOutlineClose } from "react-icons/ai";
+import { GiHamburgerMenu } from "react-icons/gi";
 import copy from "copy-to-clipboard";
 import remarkGfm from "remark-gfm";
 
 import dynamic from "next/dynamic";
-import { HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { useScrollControl } from "./useScrollControl";
 
 const SyntaxHighlighter = dynamic(
   () => import("react-syntax-highlighter").then((mod) => mod.Prism),
@@ -28,13 +29,20 @@ export const Chat = ({
   chatName,
   closeChatLink,
   initialMessages,
+  initialDoesNextPageExist,
+  isSplitScreen = false,
 }: {
   chatId: string;
   chatName: string;
   closeChatLink?: string;
   initialMessages?: Message[];
+  initialDoesNextPageExist?: boolean;
+  isSplitScreen?: boolean;
 }) => {
-  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [doesNextPageExist, setDoesNextPageExist] = useState(
+    initialDoesNextPageExist
+  );
   const { toggleSidebar, isSideBarOpen } = useSidebarToggle();
 
   const [completedMessages, setCompletedMessages] = useState<Message[]>(
@@ -46,20 +54,50 @@ export const Chat = ({
     handleInputChange,
     handleSubmit,
     append: appendMessage,
+    setMessages,
   } = useChat({
     api: "/api/chat",
     body: {
       chatId,
     },
     initialMessages,
+    onFinish(message) {
+      setCompletedMessages((prev) => [...prev, message]);
+    },
   });
 
+  const loadMore = () => {
+    setIsLoading(true);
+    fetch(`/api/chat/${chatId}?currentPage=${messages.length / 20 + 1}`)
+      .then((res) => res.json())
+      .then((messagesData) => {
+        setDoesNextPageExist(messagesData.doesNextPageExist);
+        // @ts-ignore fix this later
+        const formattedMsgs = messagesData.messages.map((dbMessage) => ({
+          content: dbMessage.message,
+          role: dbMessage.role,
+        }));
+        setMessages([...formattedMsgs, ...messages]);
+        // @ts-ignore fix this later
+        setCompletedMessages([...formattedMsgs, ...prev]);
+        setIsLoading(false);
+      });
+  };
+
+  const scrollingRef = useScrollControl(messages);
+
   return (
-    <div className="chat h-full flex flex-col overflow-y-scroll">
+    <div
+      className="chat h-full flex flex-col overflow-y-scroll"
+      ref={scrollingRef}
+    >
       <div className="sticky top-0 bg-white text-center py-2 border-b flex justify-between z-10">
         <div>
-          <button onClick={() => toggleSidebar()} className="md:invisible p-2 ml-2 -mr-2 border rounded-xl hover:bg-gray-200 transition-all">
-            <HamburgerMenuIcon />
+          <button
+            onClick={() => toggleSidebar()}
+            className="md:invisible p-2 ml-2 -mr-2 border rounded-xl hover:bg-gray-200 transition-all"
+          >
+            <GiHamburgerMenu />
           </button>
         </div>
         <div className="w-3/4 line-clamp-1">{chatName}</div>
@@ -71,15 +109,34 @@ export const Chat = ({
           )}
         </div>
       </div>
+      {doesNextPageExist && (
+        <div className="relative">
+          <button
+            onClick={loadMore}
+            disabled={isLoading}
+            className="absolute left-1/2 transform -translate-x-1/2 bg-gray-400 text-white rounded-full py-2 px-4 mt-1 text-sm hover:bg-gray-600  focus:outline-none focus:border-gray-900 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+          >
+            {isLoading ? (
+              "Loading..."
+            ) : (
+              <div className="flex">
+                <LuMousePointerClick size={18} className="mr-2" /> Load previous
+                messages
+              </div>
+            )}
+          </button>
+        </div>
+      )}
       {messages.map((message) => (
         <div
           key={message.id}
           className={
-            "px-4 md:px-16 " +
-            (message.role === "assistant" ? "bg-gray-300" : "bg-white")
+            (isSplitScreen
+              ? "px-6 md:px-8 lg:px-16"
+              : "px-6 md:px-16 lg:px-32") +
+            (message.role === "assistant" ? " bg-gray-300" : " bg-white")
           }
         >
-          {console.log(message)}
           <div className="py-4">
             <b>{message.role === "assistant" ? "AI: " : "You: "}</b>
             <Markdown
@@ -125,15 +182,13 @@ export const Chat = ({
       {/* <div ref={messagesEndRef} /> */}
       <div className="flex-grow min-h-24 md:h-32"></div>
       <div className="sticky bottom-0 px-8 md:px-16 w-full">
-        {/* 
-           Not loving this - feels like a waste of space and resources ($$$), underpolished
-           Need to re-evaluate later and see if it's worth it
-
+        {completedMessages.length % 2 === 0 && completedMessages.length > 0 && (
           <Suggestions
             completedMessages={completedMessages}
             addMessage={appendMessage}
-          /> 
-        */}
+          />
+        )}
+
         <form onSubmit={handleSubmit}>
           <input
             className="border border-gray-300 rounded mb-8 shadow-xl p-2 w-full resize-none max-h-[200px]"

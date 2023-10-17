@@ -46,7 +46,7 @@ async function getLatLngForPlaces(
 import { NextRequest, NextResponse } from "next/server";
 import { getChat } from "@/db/getChat";
 import { DIAGRAM_SCHEMA } from "./schemas";
-import { searchImages } from "@/bing/image-search";
+import { searchImages } from "@/experimental/bing/image-search";
 // import { ChatCompletionFunctions } from "openai-edge/types/api";
 
 const db_config: PSConfig = {
@@ -145,13 +145,11 @@ const functions = [
 // const openAI = new OpenAI();
 
 // IMPORTANT! Set the runtime to edge
-export const config = {
-  runtime: "edge",
-  unstable_allowDynamic: [
-    // This is currently required because `qs` uses `side-channel` which depends on this.
-    "/node_modules/function-bind/**",
-  ],
-};
+export const runtime = "edge";
+// export const unstable_allowDynamic = [
+//   // This is currently required because `qs` uses `side-channel` which depends on this.
+//   "/node_modules/function-bind/**",
+// ];
 
 export async function POST(req: NextRequest) {
   const req_body = await req.json();

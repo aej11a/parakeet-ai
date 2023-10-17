@@ -18,15 +18,15 @@ export type FormattedChat = {
 
 export const runtime = "edge";
 
-const db_config: PSConfig = {
-  host: process.env.PS_HOST,
-  username: process.env.PS_USERNAME,
-  password: process.env.PS_PASSWORD,
-};
-
-const db = new PSClient(db_config);
-
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
+  const currentPageRaw = req.nextUrl.searchParams.get("currentPage");
+  const pageSizeRaw = req.nextUrl.searchParams.get("pageSize");
+  const currentPage = currentPageRaw ? parseInt(currentPageRaw) : 1;
+  const pageSize = pageSizeRaw
+    ? parseInt(pageSizeRaw) < 20
+      ? parseInt(pageSizeRaw)
+      : 20
+    : 20;
   const { userId } = auth();
 
   if (!userId) {
@@ -34,9 +34,7 @@ export async function POST(req: NextRequest) {
   }
 
   return new NextResponse(
-    JSON.stringify({
-      chats: await getChats(userId),
-    }),
+    JSON.stringify(await getChats(userId, pageSize, currentPage)),
     {
       headers: {
         "Content-Type": "application/json",
