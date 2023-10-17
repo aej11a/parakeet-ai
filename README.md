@@ -1,5 +1,9 @@
 # Parakeet AI: an open-source chat UI
 
+## Open-source next.js-based AI chat UI.
+
+![Parakeet logo with circuit pattern](public/parakeet.png)
+
 ## Running the project
 
 1. you'll need a planetscale DB account, free tier should work [https://planetscale.com/](https://planetscale.com/)
