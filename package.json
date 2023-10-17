@@ -2,6 +2,7 @@
   "name": "concise-gpt",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "browser": {
     "crypto": false
   },
