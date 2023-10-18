@@ -16,6 +16,7 @@ import remarkGfm from "remark-gfm";
 
 import dynamic from "next/dynamic";
 import { useScrollControl } from "./useScrollControl";
+import { DeleteChatButton } from "./DeleteChatButton";
 
 const SyntaxHighlighter = dynamic(
   () => import("react-syntax-highlighter").then((mod) => mod.Prism),
@@ -100,7 +101,10 @@ export const Chat = ({
             <GiHamburgerMenu />
           </button>
         </div>
-        <div className="w-3/4 line-clamp-1">{chatName}</div>
+        <div className="w-3/4 line-clamp-1 flex text-center justify-center">
+          <div className="mr-4">{chatName}</div>
+          <DeleteChatButton />
+        </div>
         <div className="px-4">
           {closeChatLink && (
             <Link href={closeChatLink}>
