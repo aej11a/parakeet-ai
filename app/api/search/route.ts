@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs";
 import { getChat } from "@/db/getChat";
-import {
-  MessageFromDb,
-  searchForMessages,
-} from "./searchForMessages";
+import { MessageFromDb, searchForMessages } from "./searchForMessages";
 
 export const GET = async (req: NextRequest) => {
   // split the req.nextUrl.pathname into an array of strings and grab the last element

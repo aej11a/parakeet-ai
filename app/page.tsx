@@ -9,7 +9,7 @@ export default function Home() {
     api: "/api/chat",
     body: {
       chatId,
-    }
+    },
   });
 
   return (
