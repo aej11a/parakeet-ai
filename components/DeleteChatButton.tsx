@@ -29,7 +29,7 @@ export const DeleteChatButton = ({
         })
           .then((res) => res.json())
           .then((res) => {
-            console.log(res); // add toast or other notification
+            // TODO: add a confirmation message
             router.push("/");
           });
       }}
