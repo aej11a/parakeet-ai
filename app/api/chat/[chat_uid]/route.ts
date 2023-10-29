@@ -91,3 +91,57 @@ export const getMessages = async (
     doesNextPageExist,
   };
 };
+
+export const DELETE = async (req: NextRequest) => {
+  const chat_uid = req.nextUrl.pathname.split("/").pop();
+  const { userId } = auth();
+
+  if (!userId) {
+    return new Response("Not Authorized", { status: 401 });
+  }
+
+  if (!chat_uid) {
+    return new Response("Missing chat_uid", { status: 400 });
+  }
+
+  return new NextResponse(JSON.stringify(await deleteChat(userId, chat_uid)), {
+    headers: {
+      "Content-Type": "application/json",
+      // do not cache
+      "Cache-Control": "private, no-store, no-cache",
+    },
+  });
+};
+
+const deleteChat = async (userId: string, chat_uid: string) => {
+  try {
+    const conn = db.connection();
+    const messagesDeletion = await conn.execute(
+      `DELETE FROM messages
+    WHERE chat_uid = :chat_uid AND user_uid = :userId;`,
+      {
+        chat_uid,
+        userId,
+      }
+    );
+    const chatDeletion = await conn.execute(
+      `DELETE FROM chats
+    WHERE uid = :chat_uid AND user_uid = :userId;`,
+      {
+        chat_uid,
+        userId,
+      }
+    );
+
+    return {
+      success: true,
+      error: null,
+    };
+  } catch (e) {
+    console.log("Error deleting chat", e);
+    return {
+      success: false,
+      error: "Error deleting chat",
+    };
+  }
+};
