@@ -36,10 +36,32 @@ export const UserChatLinks = ({
       });
   };
 
+  let lastDate = "";
+  const indexToDateMap = new Map<number, string>();
+  // iterate through the chats and add a date header for each new date
+  cumulativeChats.forEach((chat, index) => {
+    const date = new Date(chat.created_at);
+    const dateString = date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    if (dateString !== lastDate) {
+      indexToDateMap.set(index, dateString);
+      lastDate = dateString;
+    }
+  });
+
   return (
     <div className="min-h-full overflow-y-auto">
       {cumulativeChats.map((chat) => (
         <div key={chat.uid}>
+          {indexToDateMap.has(cumulativeChats.indexOf(chat)) && (
+            <div className="ml-2 text-slate-400 text-xs mt-2">
+              {indexToDateMap.get(cumulativeChats.indexOf(chat))}
+            </div>
+          )}
           <Link
             href={`/chat/${chat.uid}`}
             onClick={() => toggleSidebar()}
