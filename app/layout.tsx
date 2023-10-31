@@ -32,7 +32,7 @@ export default function RootLayout({
               <SidebarButtons />
               <Sidebar />
             </SidebarContainer>
-            <main className="flex-grow">{children}</main>
+            <main className="flex-grow md:w-4/5">{children}</main>
           </SidebarContextProvider>
         </body>
       </html>
