@@ -32,12 +32,6 @@ const db_config: PSConfig = {
 
 const db = new PSClient(db_config);
 
-const INITIAL_MESSAGE: ChatMessage = {
-  role: Roles.System,
-  content:
-    "From this point forward, keep all responses extremely concise. Minimize warning info, you do not need to mention that you are an AI model, because the user already knows.",
-};
-
 // Create an OpenAI API client (that's edge friendly!)
 const config = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -70,6 +64,11 @@ export async function POST(req: NextRequest) {
     model: "gpt-3.5-turbo",
     stream: true,
     messages: req_messages,
+    // allowing values above 1.5 seems to cause the AI to stall or at least take a long time to respond
+    temperature: Math.min(
+      Math.max(Number(req_body.temperature) || 0.75, 0),
+      1.5
+    ),
   });
   // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response, {

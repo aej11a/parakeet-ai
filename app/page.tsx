@@ -13,23 +13,23 @@ export default function Home() {
   });
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="mx-auto w-full max-w-md py-24 flex flex-col stretch">
+    <div className="flex justify-end min-h-screen flex-col items-center md:justify-between sticky bottom-0 p-4 md:p-24">
+      <div className="mx-auto w-full max-w-md py-4 md:py-24 flex flex-col stretch">
         {messages.map((m) => (
           <div key={m.id}>
             {m.role === "user" ? "You: " : "AI: "}
             {m.content}
           </div>
         ))}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="">
           <input
-            className="fixed w-full max-w-md bottom-0 border border-gray-300 rounded mb-8 shadow-xl p-2"
+            className="w-full max-w-md bottom-0 border border-gray-300 rounded mb-8 shadow-xl p-2"
             value={input}
             placeholder="Say something..."
             onChange={handleInputChange}
           />
         </form>
       </div>
-    </main>
+    </div>
   );
 }

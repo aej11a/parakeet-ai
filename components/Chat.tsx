@@ -17,6 +17,10 @@ import remarkGfm from "remark-gfm";
 import dynamic from "next/dynamic";
 import { useScrollControl } from "./useScrollControl";
 import { DeleteChatButton } from "./DeleteChatButton";
+import {
+  ChatSettingsModal,
+  getTemperatureFromLocalStorage,
+} from "./SettingsModal";
 
 const SyntaxHighlighter = dynamic(
   () => import("react-syntax-highlighter").then((mod) => mod.Prism),
@@ -60,6 +64,7 @@ export const Chat = ({
     api: "/api/chat",
     body: {
       chatId,
+      temperature: getTemperatureFromLocalStorage(chatId),
     },
     initialMessages,
     onFinish(message) {
@@ -103,7 +108,7 @@ export const Chat = ({
         </div>
         <div className="w-3/4 line-clamp-1 flex text-center justify-center">
           <div className="mr-4">{chatName}</div>
-          <DeleteChatButton chatName={chatName} chatUid={chatId} />
+          <ChatSettingsModal chatName={chatName} chatUid={chatId} />
         </div>
         <div className="px-4">
           {closeChatLink && (

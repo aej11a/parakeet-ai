@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { FiTrash2 as TrashIcon } from "react-icons/fi";
-import { ModalWithTrigger } from "./ModalWithTrigger";
+import { ConfirmationModal } from "./ModalWithTrigger";
 
 export const DeleteChatButton = ({
   chatName,
@@ -12,8 +12,14 @@ export const DeleteChatButton = ({
 }) => {
   const router = useRouter();
   return (
-    <ModalWithTrigger
-      triggerContent={<TrashIcon size={20} />}
+    <ConfirmationModal
+      triggerContent={
+        <>
+          <p className="mr-2">Delete Chat</p>
+          <TrashIcon size={20} />
+        </>
+      }
+      triggerClassnames="flex px-4 py-2 rounded-lg bg-red-400 font-bold text-sm rounded hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
       headline="Delete chat?"
       bodyContent={
         <>
