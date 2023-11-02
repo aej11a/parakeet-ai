@@ -25,7 +25,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body
-          className={inter.className + " w-full h-screen relative z-0"}
+          className={inter.className + " md:flex w-full h-screen relative z-0"}
         >
           <SidebarContextProvider>
             <SidebarContainer>

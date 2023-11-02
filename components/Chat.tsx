@@ -49,10 +49,10 @@ export const Chat = ({
     initialDoesNextPageExist
   );
   const { toggleSidebar, isSideBarOpen } = useSidebarToggle();
-
   const [completedMessages, setCompletedMessages] = useState<Message[]>(
     initialMessages || []
   );
+  const userMsgRef = useRef<string | null>(null);
   const {
     messages,
     input,
@@ -68,7 +68,15 @@ export const Chat = ({
     },
     initialMessages,
     onFinish(message) {
-      setCompletedMessages((prev) => [...prev, message]);
+      setCompletedMessages((prev) => [
+        ...prev,
+        {
+          id: "placeholder", // this doesn't actually matter
+          role: "user",
+          content: userMsgRef.current!,
+        },
+        message,
+      ]);
     },
   });
 
@@ -203,7 +211,10 @@ export const Chat = ({
             className="border border-gray-300 rounded mb-8 shadow-xl p-2 w-full resize-none max-h-[200px]"
             value={input}
             placeholder="Say something..."
-            onChange={handleInputChange}
+            onChange={(e) => {
+              userMsgRef.current = e.target.value;
+              handleInputChange(e);
+            }}
           />
         </form>
       </div>

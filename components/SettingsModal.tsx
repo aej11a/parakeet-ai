@@ -6,13 +6,19 @@ import { DeleteChatButton } from "./DeleteChatButton";
 import { useRef } from "react";
 
 const setTemperatureInLocalStorage = (chatUid: string, temperature: number) => {
-  const temperatures = JSON.parse(localStorage.getItem("temperatures") || "{}");
+  const temperatures =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("temperatures") || "{}")
+      : {};
   temperatures[chatUid] = temperature;
   localStorage.setItem("temperatures", JSON.stringify(temperatures));
 };
 
 export const getTemperatureFromLocalStorage = (chatUid: string) => {
-  const temperatures = JSON.parse(localStorage.getItem("temperatures") || "{}");
+  const temperatures =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("temperatures") || "{}")
+      : {};
   return temperatures[chatUid] || 0.75;
 };
 
