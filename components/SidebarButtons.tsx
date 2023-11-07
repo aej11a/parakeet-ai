@@ -11,6 +11,7 @@ import { FaMagnifyingGlass } from "react-icons/fa6";
 export const SidebarButtons = () => {
   const segments = useSelectedLayoutSegments();
   const { toggleSidebar } = useSidebarToggle();
+  
   return (
     <div className="sidebar-buttons-top mb-1 flex flex-col gap-2 mt-2 pl-2 overflow-scroll sticky top-0 bg-slate-900 pb-2 shadow-b-md">
       <div className="pl-1 pt-1 mb-1 grid grid-cols-8 md:grid-cols-5">
@@ -37,10 +38,10 @@ export const SidebarButtons = () => {
             <svg
               stroke="currentColor"
               fill="none"
-              stroke-width="2"
+              strokeWidth="2"
               viewBox="0 0 24 24"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               className="h-4 w-4"
               height="1em"
               width="1em"

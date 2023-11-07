@@ -15,7 +15,8 @@ export const useScrollControl = (messages: any) => {
     if (divRef.current && !initialLoad) {
       const { scrollTop, scrollHeight, clientHeight } = divRef.current;
       const isNearBottom =
-        Math.abs(scrollHeight - scrollTop - clientHeight) < window.innerHeight / 10;
+        Math.abs(scrollHeight - scrollTop - clientHeight) <
+        window.innerHeight / 10;
 
       if (isNearBottom) {
         divRef.current.scrollTo({
